@@ -5,13 +5,13 @@
 #include <arpa/inet.h> 
 #include <unistd.h> 
 #include <string.h> 
-#define PORT 8080 
+#define PORT 60019 
    
-int main(int argc, char const *argv[]) 
+int main(int argc, char *argv[]) 
 { 
     int sock = 0, valread; 
     struct sockaddr_in serv_addr; 
-    char *hello = "Hello from client"; 
+    char *hello = argv[1];
     char buffer[1024] = {0}; 
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
     { 
