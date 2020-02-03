@@ -59,13 +59,14 @@ int main(int argc, char const *argv[])
             perror("accept"); 
             exit(EXIT_FAILURE); 
         } 
-        while(n = read( new_socket , buffer, 1024) > 0); 
+        n = read( new_socket , buffer, 1024);
+        while(n > 0); 
         {
             
             ptr += n;
             maxLen -= n;
             len += n;
-        
+            n = recv(new_socket , buffer, 1024,MSG_DONTWAIT);
         }
         printf("%s\n",buffer );
         send(new_socket , hello , strlen(hello) , 0 ); 
