@@ -23,7 +23,7 @@ int main(void)
 {
     int ls;                            // listen socket descriptor(reference)
     int s;                           // socket descriptor(reference)
-    char buffer [256];               // data buffer
+    char buffer [256] ={0};               // data buffer
     char* ptr = buffer;              // data buffer
     int len = 0;                     // number of bytes to send or receive
     int maxLen = sizeof(buffer);      // max number of bytes to receive
@@ -31,8 +31,8 @@ int main(void)
     int waitSize =16;         // size of waiting clients
     struct sockaddr_in serverAddr; // server address
     struct sockaddr_in clientAddr; // client address
-    socklen_t cltAddr = sizeof(clientAddr); // length of client address
-    int SERV_PORT = 60019;
+    socklen_t cltAddr = sizeof(serverAddr); // length of client address
+    int SERV_PORT = 8080;
 
 
     //create local (server) socket address
@@ -73,7 +73,7 @@ int main(void)
         printf("got here_1\n");
         
         //accept connection from client
-        if((s = accept(ls,(struct sockaddr*)&clientAddr,(socklen_t*) &cltAddr) < 0))
+        if((s = accept(ls,(struct sockaddr*)&serverAddr,(socklen_t*) &cltAddr) < 0))
         {
             perror("Error accepting");
             exit(1);
@@ -82,19 +82,21 @@ int main(void)
         // data transfer
     printf("got here_2\n");
         
-        n = recv(s, buffer, 255,0);  // problem child
-
-        printf("%d", n);
+          // problem child
+      
         int count = 0;
-        while(n > 0)
+        n = recv(s, ptr, maxLen,0);
+        printf("%d\n", n);/*
+        while(n = recv(s, ptr, maxLen,0) != 0)
         {
-            printf("%d\n", count);
+            printf("%d\n", n);
             count++;
+
             ptr += n;
             maxLen -= n;
             len += n;
-            n = recv(s,ptr,maxLen,0);
-        }
+            
+        }*/
         
         //send back all bytes received
         send(s, buffer, len,0);

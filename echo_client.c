@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
     char* myString;
     //char* line = ;
     int len;
-    char buffer [256];
+    char buffer [256 +1];
     char * ptr = buffer;
     int maxLen = sizeof(buffer);
     struct sockaddr_in serverAddr; // server socket address
@@ -67,12 +67,12 @@ int main(int argc, char* argv[])
 
     // data transfer
 
-    bzero(buffer, 256);
     int p = send(s, myString,strlen(myString), 0);
-
     printf("%d", p);
-    /*int count = 0;
-    n = recv(s,ptr,maxLen,0);
+    
+    int count = 0;
+    //n = recv(s,ptr,maxLen,0);
+    /*
     printf("got here\n");
     while(n > 0)
     {
