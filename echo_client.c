@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 
     if(argc != 2)
     {
-        printf("Two arguments are required!\n");
+        printf("Two arguments are required!\n One for the executable and one for the file requested.");
         exit(1);
     }
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
