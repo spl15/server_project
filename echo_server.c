@@ -9,15 +9,15 @@
 #define PORT 60019
 int main(int argc, char const *argv[]) 
 { 
-    int server_fd, new_socket, valread; 
+    int server_fd, new_socket; 
     struct sockaddr_in address; 
     int opt = 1; 
     int addrlen = sizeof(address); 
     char buffer[256] = {0}; 
     char *hello = "Hello from server"; 
-   // char* ptr = buffer;
-   // int maxLen = sizeof(buffer);
-   // int len = 0;
+    char* ptr = buffer;
+    int maxLen = sizeof(buffer);
+    int len = 0;
     int n;
        
     // Creating socket 
@@ -60,17 +60,15 @@ int main(int argc, char const *argv[])
              exit(EXIT_FAILURE); 
         } 
              
-        n = recv( new_socket , buffer, sizeof(buffer), 0);
-        //{
-         //   ptr += n;
-          //  maxLen -=n;
-          //  len += n;
-           // n = recv( new_socket , buffer, 1024, 0);
-       // }
+        while((n = recv( new_socket , buffer, sizeof(buffer), 0)) > 0)
+        {
+            ptr += n;
+            maxLen -=n;
+            len += n;
+        }
 
         printf("%s\n",buffer ); 
-        int k = send(new_socket , hello , strlen(hello) , 0 ); 
-        printf("%d\n", k);
+        send(new_socket , hello , strlen(hello) , 0 ); 
         printf("hello message sent from server\n");
    } 
     return 0; 
