@@ -1,98 +1,58 @@
-/*
- * the header files i will need to include
- * 
- * Author: Stephen Lamalie
- * Class: COP4635/ project_1
- */
 
-#include<stdio.h>
-#include<stdlib.h>
-#include<sys/types.h>
-#include<sys/socket.h>
-#include<netinet/in.h>
-#include<netdb.h>
-#include<errno.h>
-#include<signal.h>
-#include<unistd.h>
-#include<string.h>
-#include<arpa/inet.h>
-#include<sys/wait.h>
+// Client side C/C++ program to demonstrate Socket programming with a string
+#include <stdio.h> 
+#include <sys/socket.h> 
+#include <arpa/inet.h> 
+#include <unistd.h> 
+#include <sys/time.h>
+#include <string.h> 
+#define PORT 60019 
+   
+int main(int argc, char *argv[]) 
+{ 
+    int sock = 0;
+    int n; 
+    struct sockaddr_in serv_addr; 
+    char *hello = argv[1];
+    char buffer[256] = {0}; 
+    struct timeval tv;
+    tv.tv_sec = 2;
+    tv.tv_usec = 0;
 
-int main(int argc, char* argv[])
-{
-
-    int s;
-    int n;
-    char* serverName;
-    int serverPort;
-    char* myString;
-    //char* line = ;
-    int len;
-    char buffer [256 +1];
-    char * ptr = buffer;
-    int maxLen = sizeof(buffer);
-    struct sockaddr_in serverAddr; // server socket address
-
-    // check argc and handle argv
-
-    if(argc != 4)
+    if(argc != 2)
     {
-        printf("Error, three arguments are required");
+        printf("Two arguments are required!");
         exit(1);
     }
-    serverName = argv[1];
-    serverPort = atoi(argv[2]);
-    myString = argv[3];
-
-    //create the remote(server) socket address
-
-    memset(&serverAddr,0,sizeof(serverAddr));
-    serverAddr.sin_family = AF_INET;
-    inet_pton(AF_INET, serverName,&serverAddr.sin_addr);     // server ip address
-    serverAddr.sin_port = htons(serverPort);
-    // create the socket
-    if((s = socket(PF_INET,SOCK_STREAM,0)) < 0)
+    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
+    { 
+        printf("\n Socket creation error \n"); 
+        return -1; 
+    } 
+   
+    serv_addr.sin_family = AF_INET; 
+    serv_addr.sin_port = htons(PORT); 
+       
+   //using the loopback address for testing
+    if(inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)<=0)  
+    { 
+        printf("\nInvalid address/ Address not supported \n"); 
+        return -1; 
+    } 
+   
+    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) 
+    { 
+        printf("\nConnection Failed \n"); 
+        return -1; 
+    } 
+    send(sock , hello , strlen(hello) , 0 ); 
+    printf("message sent from client\n"); 
+    int test;
+    while((test = select(sock+1, &sock, NULL, NULL, &tv)) > 0)
     {
-        perror("Error creating the socket");
-        exit(1);
+        n = recv( sock , buffer, sizeof(buffer),0); 
     }
-
-    // connect to server
-
-    if(connect(s,(struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0)
-    {
-        perror("Error connecting to the server");
-        exit(1);
-    }
-
-    // data transfer
-
-    int p = send(s, myString,strlen(myString), 0);
-    printf("%d", p);
-    
-    int count = 0;
-    //n = recv(s,ptr,maxLen,0);
-    /*
-    printf("got here\n");
-    while(n > 0)
-    {
-        printf("%d\n",count);
-        count++;
-        ptr += n; // move the pointer
-        maxLen -= n;// reduce max
-        len += n;
-        n = recv(s,ptr,maxLen,0);
-    }
-    
-    //print and verify
-
-    buffer[len] = '\0';
-    printf("Echo stream reveived\n");
-    fputs(buffer,stdout);
-    */
-    //close socket
-    close(s);
-    
-    //exit normally
-    exit(0);
-}
+    printf("%d", test);
+    printf("%s\n",buffer ); 
+    return 0; 
+} 

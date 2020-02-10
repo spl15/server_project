@@ -1,107 +1,76 @@
-/*
- * the header files i will need to include
- * 
- * Author: Stephen Lamalie
- * Class: COP4635/ project_1
- */
 
-#include<stdio.h>
-#include<stdlib.h>
-#include<sys/types.h>
-#include<sys/socket.h>
-#include<netinet/in.h>
-#include<netdb.h>
-#include<errno.h>
-#include<signal.h>
-#include<unistd.h>
-#include<string.h>
-#include<arpa/inet.h>
-#include<sys/wait.h>
-
-
-int main(void)
-{
-    int ls;                            // listen socket descriptor(reference)
-    int s;                           // socket descriptor(reference)
-    char buffer [256] ={0};               // data buffer
-    char* ptr = buffer;              // data buffer
-    int len = 0;                     // number of bytes to send or receive
-    int maxLen = sizeof(buffer);      // max number of bytes to receive
-    int n = 0;                   // number of bytes for each recv call
-    int waitSize =16;         // size of waiting clients
-    struct sockaddr_in serverAddr; // server address
-    struct sockaddr_in clientAddr; // client address
-    socklen_t cltAddr = sizeof(serverAddr); // length of client address
-    int SERV_PORT = 8080;
-
-
-    //create local (server) socket address
-
-    memset(&serverAddr,0,sizeof(serverAddr));
-
-    serverAddr.sin_family = AF_INET;
-    serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    serverAddr.sin_port = htons(SERV_PORT);
-     
-    // create the listen sicket
-
-    if((ls = socket(AF_INET,SOCK_STREAM,0)) < 0)
-    {
-        perror("Error: Listen socket failed");
-        exit(1);
+// Server side C/C++ program to demonstrate Socket programming with a string
+#include <unistd.h> 
+#include <stdio.h> 
+#include <sys/socket.h> 
+#include <stdlib.h> 
+#include <netinet/in.h> 
+#include <string.h> 
+#define PORT 60019
+int main(int argc, char const *argv[]) 
+{ 
+    int server_fd, new_socket, valread; 
+    struct sockaddr_in address; 
+    int opt = 1; 
+    int addrlen = sizeof(address); 
+    char buffer[256] = {0}; 
+    char *hello = "Hello from server"; 
+    char* ptr = buffer;
+    int maxLen = sizeof(buffer);
+    int len = 0;
+    int n;
+       
+    // Creating socket 
+    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) 
+    { 
+        perror("socket failed"); 
+        exit(EXIT_FAILURE); 
+    } 
+       
+    
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, 
+                                                  &opt, sizeof(opt))) 
+    { 
+        perror("setsockopt"); 
+        exit(EXIT_FAILURE); 
+    } 
+    address.sin_family = AF_INET; 
+    address.sin_addr.s_addr = INADDR_ANY; 
+    address.sin_port = htons( PORT ); 
+       
+   
+    if (bind(server_fd, (struct sockaddr *)&address,  
+                                 sizeof(address))<0) 
+    { 
+        perror("bind failed"); 
+        exit(EXIT_FAILURE); 
+    } 
+    if (listen(server_fd, 3) < 0) 
+    { 
+        perror("listen"); 
+        exit(EXIT_FAILURE); 
     }
-
-    // bind listen socket to local socket address
-
-    if(bind(ls,(struct sockaddr*)&serverAddr,sizeof(serverAddr)) < 0)
-    {
-        perror("Error binding");
-        exit(1);
-    }
-
-    // listen for connection requests
-
-    if(listen(ls,waitSize)< 0)
-    {
-        perror("Error listening");
-        exit(1);
-    }
-
-    // handle the connection
-    for (;;)
-    {
-        printf("got here_1\n");
-        
-        //accept connection from client
-        if((s = accept(ls,(struct sockaddr*)&serverAddr,(socklen_t*) &cltAddr) < 0))
+   for(;;)
+   { 
+        if ((new_socket = accept(server_fd, (struct sockaddr *)&address,  
+                           (socklen_t*)&addrlen))<0) 
+        { 
+            perror("accept"); 
+             exit(EXIT_FAILURE); 
+        } 
+        ;     
+        while((n = recv( new_socket , buffer, sizeof(buffer), 0)) != 0)
         {
-            perror("Error accepting");
-            exit(1);
+            ptr += n;
+            maxLen -=n;
+            len += n;
+            n = recv( new_socket , buffer, 1024, 0);
         }
 
-        // data transfer
-    printf("got here_2\n");
-        
-          // problem child
-      
-        int count = 0;
-        n = recv(s, ptr, maxLen,0);
-        printf("%d\n", n);/*
-        while(n = recv(s, ptr, maxLen,0) != 0)
-        {
-            printf("%d\n", n);
-            count++;
-
-            ptr += n;
-            maxLen -= n;
-            len += n;
-            
-        }*/
-        
-        //send back all bytes received
-        send(s, buffer, len,0);
-        //close socket
-        close(s);
-    }
-
-}
+        printf("%s\n",buffer ); 
+        int k = send(new_socket , hello , strlen(hello) , 0 ); 
+        printf("%d", k);
+        printf("message sent from server\n");
+   } 
+    return 0; 
+} 
