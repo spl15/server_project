@@ -3,7 +3,8 @@
 #include <stdio.h> 
 #include <sys/socket.h> 
 #include <arpa/inet.h> 
-#include <unistd.h> 
+#include <unistd.h>
+#include <stdlib.h>
 #include <sys/time.h>
 #include <string.h> 
 #define PORT 60019 
@@ -11,13 +12,13 @@
 int main(int argc, char *argv[]) 
 { 
     int sock = 0;
-    int n; 
+  //  int n; 
     struct sockaddr_in serv_addr; 
     char *hello = argv[1];
     char buffer[256] = {0}; 
-    struct timeval tv;
-    tv.tv_sec = 2;
-    tv.tv_usec = 0;
+   // struct timeval tv;
+   // tv.tv_sec = 2;
+  // tv.tv_usec = 0;
 
     if(argc != 2)
     {
@@ -47,12 +48,12 @@ int main(int argc, char *argv[])
     } 
     send(sock , hello , strlen(hello) , 0 ); 
     printf("message sent from client\n"); 
-    int test;
-    while((test = select(sock+1, &sock, NULL, NULL, &tv)) > 0)
-    {
-        n = recv( sock , buffer, sizeof(buffer),0); 
-    }
-    printf("%d", test);
+   // int test;
+   // while((test = select(sock+1, &sock, NULL, NULL, &tv)) > 0)
+   // {
+     recv( sock , buffer, sizeof(buffer),0); 
+   // }
+   // printf("%d", test);
     printf("%s\n",buffer ); 
     return 0; 
 } 

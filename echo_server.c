@@ -15,9 +15,9 @@ int main(int argc, char const *argv[])
     int addrlen = sizeof(address); 
     char buffer[256] = {0}; 
     char *hello = "Hello from server"; 
-    char* ptr = buffer;
-    int maxLen = sizeof(buffer);
-    int len = 0;
+   // char* ptr = buffer;
+   // int maxLen = sizeof(buffer);
+   // int len = 0;
     int n;
        
     // Creating socket 
@@ -50,6 +50,7 @@ int main(int argc, char const *argv[])
         perror("listen"); 
         exit(EXIT_FAILURE); 
     }
+    printf("server running\n");
    for(;;)
    { 
         if ((new_socket = accept(server_fd, (struct sockaddr *)&address,  
@@ -58,19 +59,19 @@ int main(int argc, char const *argv[])
             perror("accept"); 
              exit(EXIT_FAILURE); 
         } 
-        ;     
-        while((n = recv( new_socket , buffer, sizeof(buffer), 0)) != 0)
-        {
-            ptr += n;
-            maxLen -=n;
-            len += n;
-            n = recv( new_socket , buffer, 1024, 0);
-        }
+             
+        n = recv( new_socket , buffer, sizeof(buffer), 0);
+        //{
+         //   ptr += n;
+          //  maxLen -=n;
+          //  len += n;
+           // n = recv( new_socket , buffer, 1024, 0);
+       // }
 
         printf("%s\n",buffer ); 
         int k = send(new_socket , hello , strlen(hello) , 0 ); 
-        printf("%d", k);
-        printf("message sent from server\n");
+        printf("%d\n", k);
+        printf("hello message sent from server\n");
    } 
     return 0; 
 } 
