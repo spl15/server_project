@@ -67,9 +67,11 @@ int main(int argc, char const *argv[])
             len += n;
         }
 
-        printf("%s\n",buffer ); 
+        printf("%s\n",buffer );
+        fflush(NULL);	
         send(new_socket , hello , strlen(hello) , 0 ); 
         printf("hello message sent from server\n");
+	fflush(NULL);
    } 
     return 0; 
 } 

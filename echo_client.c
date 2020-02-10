@@ -50,7 +50,8 @@ int main(int argc, char *argv[])
         return -1; 
     } 
     send(sock , hello , strlen(hello) , 0 ); 
-    printf("message sent from client\n"); 
+    printf("message sent from client\n");
+   fflush(NULL); 
 
     while((n = recv( sock , buffer, sizeof(buffer),0)) > 0)
     {
@@ -58,6 +59,7 @@ int main(int argc, char *argv[])
         maxLen -=n;
         len += n; 
     }
-    printf("%s\n",buffer ); 
+    printf("%s\n",buffer );
+    fflush(NULL); 
     return 0; 
 } 
