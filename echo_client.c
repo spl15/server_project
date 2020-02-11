@@ -1,5 +1,5 @@
 
-// Client side C/C++ program to demonstrate Socket programming with a string
+
 #include <stdio.h> 
 #include <sys/socket.h> 
 #include <arpa/inet.h> 
@@ -8,22 +8,21 @@
 #include <string.h> 
 #include <stdlib.h>
 #define PORT 60019 
+
    
 int main(int argc, char *argv[]) 
 { 
     int sock = 0;
     int n; 
     struct sockaddr_in serv_addr; 
-    char *hello = argv[1];
-    char buffer[256] = {0}; 
-    //struct timeval tv;
-    //tv.tv_sec = 2;
-    //tv.tv_usec = 0;
+    char buffer[1024] = {0}; 
+    char *ptr = buffer;
+    //char* delim = "\r\n";
 
     if(argc != 2)
     {
         printf("Two arguments are required!\n One for the executable and one for the file requested.");
-        exit(1);
+        return -1;
     }
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
     { 
@@ -46,15 +45,26 @@ int main(int argc, char *argv[])
         printf("\nConnection Failed \n"); 
         return -1; 
     } 
-    send(sock , hello , strlen(hello) , 0 ); 
-    printf("message sent from client\n"); 
-  
+    //put a simple get request in the buffer with the file to get and a blank line after
+    sprintf(buffer, "GET %s HTTP/1.1\r\nHost: 127.0.0.1:600019\r\n", argv[1]);
+    //send the get request in the buffer
+    send(sock , buffer , sizeof(buffer), 0 ); 
+    printf("request sent from client\n"); 
+    //clear the buffer with 0's
+    //memset(ptr,0, sizeof(buffer));
+    
     if((n = recv(sock , buffer, sizeof(buffer),0)) < 0)
     {
         perror("Error receiving");
         exit(1);
     } 
-    printf("%s\n",buffer ); 
+    //printf("%s\n",buffer ); 
+    //write what is received to a file
+    FILE* theFile;
     
+    theFile = fopen("new_file.txt", "w+");
+    fwrite(buffer, 1, sizeof(buffer),theFile);
+    fclose(theFile);
+    close(sock);
     return 0; 
 } 

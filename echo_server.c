@@ -1,5 +1,5 @@
 
-// Server side C/C++ program to demonstrate Socket programming with a string
+
 #include <unistd.h> 
 #include <stdio.h> 
 #include <sys/socket.h> 
@@ -13,12 +13,15 @@ int main(int argc, char const *argv[])
     struct sockaddr_in address; 
     int opt = 1; 
     int addrlen = sizeof(address); 
-    char buffer[256] = {0}; 
-    char *hello = "Hello from server"; 
-    char* ptr = buffer;
+    char buffer[1024] = {0}; 
+   // char *hello = "Hello from server"; 
+   // char* ptr = buffer;
     int maxLen = sizeof(buffer);
-    int len = 0;
-    int n;
+    char* head = "HTTP/1.1 200 OK\r\n\r\n";
+    char* notFound = "HTTP/1.1 404 FILE NOT FOUND\r\n\r\n";
+   // int len = 0;
+    //int n;
+    //char* delim = "\r\n";
        
     // Creating socket 
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) 
@@ -38,13 +41,14 @@ int main(int argc, char const *argv[])
     address.sin_addr.s_addr = INADDR_ANY; 
     address.sin_port = htons( PORT ); 
        
-   
+   // bind to socket
     if (bind(server_fd, (struct sockaddr *)&address,  
                                  sizeof(address))<0) 
     { 
         perror("bind failed"); 
         exit(EXIT_FAILURE); 
     } 
+    // listen for a connection
     if (listen(server_fd, 3) < 0) 
     { 
         perror("listen"); 
@@ -52,46 +56,64 @@ int main(int argc, char const *argv[])
     }
    for(;;)
    { 
+       // accept the connection
         if ((new_socket = accept(server_fd, (struct sockaddr *)&address,  
                            (socklen_t*)&addrlen))<0) 
         { 
             perror("accept"); 
              exit(EXIT_FAILURE); 
         } 
-            
-       n = recv( new_socket , buffer, sizeof(buffer), 0);
-       // {
-        //    perror("Error receiving");
-       //     exit(1);
-       // }
-        
-        //    ptr += n;
-        // maxLen -=n;
-        //   len += n;
-        //   n = recv( new_socket , buffer, 1024, 0);
-        
 
-        printf("%s\n",buffer); 
+        // receive a request   
+       recv( new_socket , buffer, sizeof(buffer), 0);
+       //gets first token in string header(assumed to be GET)
+        char* token = strtok(buffer," ");
+        //gets the file name to be requested;
+        token = strtok(NULL," ");
+        token = token +1;
+        //memset(buffer,0,sizeof(buffer));
+    printf("%s\n", token);
+          //printf("%s\n",buffer); 
         //retrieve file
         FILE* fileName;
-        fileName = fopen(buffer, "r");
-        if(fileName == NULL)
+        // reads a file whos name is specified by the token after first word(GET) seperated by space)
+        fileName = fopen(token, "r");
+       //memset(buffer, 0, maxLen);
+        if(fileName != NULL)
         {
-            printf("file opened");
+            printf("file opened\n");
+            //find the file size to send.
+            fseek(fileName, 0L, SEEK_END);
+            int fielSize = (int)ftell(fileName);
+            // send the file
+            char c;
+            int i;
+            for(i = 0;i < maxLen; i++)
+            {
+                c = fgetc(fileName);
+                buffer[i] = c;
+                if(c == EOF)
+                {
+                    break;
+                }
+                
+            }
+            send(new_socket , buffer , fielSize , 0 );
         }
         else
         {
-            printf("file NOT opened!\n");
+            //do work here
+            printf("file not found!\n");
+            sprintf(buffer, "%s", notFound);
+            send(new_socket , buffer , maxLen , 0);
         }
         //process the file
+
+        close(new_socket);
+        //clear the buffer
+       // memset(buffer, 0, sizeof(buffer));
         
-
-
-
-
-        send(new_socket , hello , strlen(hello) , 0 ); 
-        //printf("%d", k);
-        printf("message sent from server\n");
+        //printf("message sent from server\n");
    } 
     return 0; 
 } 
