@@ -15,7 +15,6 @@ int main(int argc, char *argv[])
     int sock = 0;
     int n; 
     struct sockaddr_in serv_addr; 
-<<<<<<< HEAD
     char buffer[1024] = {0}; 
     char *ptr = buffer;
     //char* delim = "\r\n";
@@ -24,7 +23,6 @@ int main(int argc, char *argv[])
     {
         printf("Two arguments are required!\n One for the executable and one for the file requested.");
         return -1;
-=======
     char *hello = argv[1];
     char buffer[256] = {0};
     char* ptr = buffer;
@@ -37,8 +35,7 @@ int main(int argc, char *argv[])
     if(argc != 2)
     {
         printf("Two arguments are required!");
-        exit(1);
->>>>>>> 6f9f9d824cada808e2230c94b025c6f96bc09482
+        return -1;
     }
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
     { 
@@ -61,7 +58,7 @@ int main(int argc, char *argv[])
         printf("\nConnection Failed \n"); 
         return -1; 
     } 
-<<<<<<< HEAD
+
     //put a simple get request in the buffer with the file to get and a blank line after
     sprintf(buffer, "GET %s HTTP/1.1\r\nHost: 127.0.0.1:600019\r\n", argv[1]);
     //send the get request in the buffer
@@ -83,19 +80,9 @@ int main(int argc, char *argv[])
     fwrite(buffer, 1, sizeof(buffer),theFile);
     fclose(theFile);
     close(sock);
-=======
-    send(sock , hello , strlen(hello) , 0 ); 
-    printf("message sent from client\n");
-   fflush(NULL); 
 
-    while((n = recv( sock , buffer, sizeof(buffer),0)) > 0)
-    {
-        ptr += n;
-        maxLen -=n;
-        len += n; 
-    }
-    printf("%s\n",buffer );
-    fflush(NULL); 
->>>>>>> 6f9f9d824cada808e2230c94b025c6f96bc09482
+  
+
+  
     return 0; 
 } 
