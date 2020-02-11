@@ -64,7 +64,6 @@ int main(int argc, char const *argv[])
             perror("accept"); 
              exit(EXIT_FAILURE); 
         } 
-<<<<<<< HEAD
 
         // receive a request   
        recv( new_socket , buffer, sizeof(buffer), 0);
@@ -114,23 +113,10 @@ int main(int argc, char const *argv[])
         close(new_socket);
         //clear the buffer
        // memset(buffer, 0, sizeof(buffer));
-        
-        //printf("message sent from server\n");
-=======
-             
-        while((n = recv( new_socket , buffer, sizeof(buffer), 0)) > 0)
-        {
-            ptr += n;
-            maxLen -=n;
-            len += n;
-        }
+       
 
-        printf("%s\n",buffer );
-        fflush(NULL);	
-        send(new_socket , hello , strlen(hello) , 0 ); 
-        printf("hello message sent from server\n");
-	fflush(NULL);
->>>>>>> 6f9f9d824cada808e2230c94b025c6f96bc09482
+             
+    
    } 
     return 0; 
 } 
