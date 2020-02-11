@@ -13,9 +13,9 @@ int main(int argc, char const *argv[])
     struct sockaddr_in address; 
     int opt = 1; 
     int addrlen = sizeof(address); 
-    char buffer[1024] = {0}; 
+    char buffer[4096] = {0}; 
    // char *hello = "Hello from server"; 
-   // char* ptr = buffer;
+    char* ptr = buffer;
     int maxLen = sizeof(buffer);
     char* head = "HTTP/1.1 200 OK\r\n\r\n";
     char* notFound = "HTTP/1.1 404 FILE NOT FOUND\r\n\r\n";
@@ -73,8 +73,8 @@ int main(int argc, char const *argv[])
         token = strtok(NULL," ");
         token = token +1;
         //memset(buffer,0,sizeof(buffer));
-    printf("%s\n", token);
-          //printf("%s\n",buffer); 
+        printf("%s\n", token);
+        //printf("%s\n",buffer); 
         //retrieve file
         FILE* fileName;
         // reads a file whos name is specified by the token after first word(GET) seperated by space)
@@ -87,19 +87,14 @@ int main(int argc, char const *argv[])
             fseek(fileName, 0L, SEEK_END);
             int fielSize = (int)ftell(fileName);
             // send the file
-            char c;
-            int i;
-            for(i = 0;i < maxLen; i++)
+            char temp[150];
+            char cat[4000];
+            while(fgets(temp, 150, fileName) != 0)
             {
-                c = fgetc(fileName);
-                buffer[i] = c;
-                if(c == EOF)
-                {
-                    break;
-                }
-                
+                strcat(cat, temp[);
             }
-            send(new_socket , buffer , fielSize , 0 );
+            strcat(buffer, cat);
+            send(new_socket , ptr , fielSize , 0 );
         }
         else
         {
