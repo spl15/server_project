@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     int sock = 0;
     int n; 
     struct sockaddr_in serv_addr; 
-    char buffer[1024] = {0}; 
+    char buffer[1024]; 
     char *ptr = buffer;
     //char* delim = "\r\n";
 
@@ -23,9 +23,10 @@ int main(int argc, char *argv[])
     {
         printf("Two arguments are required!\n One for the executable and one for the file requested.");
         return -1;
+    }
     char *hello = argv[1];
-    char buffer[256] = {0};
-    char* ptr = buffer;
+   
+    
     int maxLen = sizeof(buffer);
     int len = 0;
    // struct timeval tv;
@@ -77,7 +78,22 @@ int main(int argc, char *argv[])
     FILE* theFile;
     
     theFile = fopen("new_file.txt", "w+");
-    fwrite(buffer, 1, sizeof(buffer),theFile);
+    //fwrite(buffer, 1, sizeof(buffer),theFile);
+    int i;
+    char c;
+    for(i = 0;i < maxLen;i++)
+    {
+	c = buffer[i];
+	//fputc(c, theFile);
+	if(c == EOF)
+	{
+	    break;
+	}
+        else
+	{
+            fputc(c ,theFile);
+	}
+    }
     fclose(theFile);
     close(sock);
 

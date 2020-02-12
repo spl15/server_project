@@ -13,11 +13,12 @@ int main(int argc, char const *argv[])
     struct sockaddr_in address; 
     int opt = 1; 
     int addrlen = sizeof(address); 
-    char buffer[4096] = {0}; 
+    char buffer[4096]; 
+    char temp[256];;
    // char *hello = "Hello from server"; 
     char* ptr = buffer;
     int maxLen = sizeof(buffer);
-    char* head = "HTTP/1.1 200 OK\r\n\r\n";
+    char head = "HTTP/1.1 200 OK\r\n\r\n";
     char* notFound = "HTTP/1.1 404 FILE NOT FOUND\r\n\r\n";
    // int len = 0;
     //int n;
@@ -66,9 +67,9 @@ int main(int argc, char const *argv[])
         } 
 
         // receive a request   
-       recv( new_socket , buffer, sizeof(buffer), 0);
+       recv( new_socket , temp, sizeof(temp), 0);
        //gets first token in string header(assumed to be GET)
-        char* token = strtok(buffer," ");
+        char* token = strtok(temp," ");
         //gets the file name to be requested;
         token = strtok(NULL," ");
         token = token +1;
@@ -78,33 +79,47 @@ int main(int argc, char const *argv[])
         //retrieve file
         FILE* fileName;
         // reads a file whos name is specified by the token after first word(GET) seperated by space)
-        fileName = fopen(token, "r");
+        fileName = fopen(token, "rb+");
        //memset(buffer, 0, maxLen);
         if(fileName != NULL)
         {
             printf("file opened\n");
             //find the file size to send.
             fseek(fileName, 0L, SEEK_END);
-            int fielSize = (int)ftell(fileName);
+            int fileSize = (int)ftell(fileName);
+	    rewind(fileName);
+	    int i;
+	    char c;
             // send the file
-            char temp[150];
-            char cat[4000];
-            while(fgets(temp, 150, fileName) != 0)
-            {
-                strcat(cat, temp[);
-            }
-            strcat(buffer, cat);
-            send(new_socket , ptr , fielSize , 0 );
+           // char temp[150];
+           // char cat[4000];
+	 // size_t newLen = fread(buffer,1 ,fileSize ,fileName);
+          // buffer[newLen + 1] = '\0'; 
+	   for(i = 0;i < buffer;i++)
+	   {
+	       c = fgetc(fileName);
+	       buffer[i] = c;
+	       if(c == EOF)
+	       {
+	           break;
+	       }
+	   }
+	  
+           // strcat(ptr, cat);
+	  // printf("%d\n", newLen);
+	 //  printf("%s\n", buffer);
+	  // fflush(NULL);
+           send(new_socket , buffer , maxLen , 0 );
         }
         else
         {
             //do work here
             printf("file not found!\n");
-            sprintf(buffer, "%s", notFound);
-            send(new_socket , buffer , maxLen , 0);
+           // sprintf(buffer, "%s", notFound);
+            send(new_socket , notFound , sizeof(notFound) , 0);
         }
         //process the file
-
+	close(fileName);
         close(new_socket);
         //clear the buffer
        // memset(buffer, 0, sizeof(buffer));
