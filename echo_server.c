@@ -18,6 +18,7 @@ int main(int argc, char const *argv[])
     char head[] = "HTTP/1.1 200 OK\r\n\r\n";
     char notFound[] = "HTTP/1.1 450 File not available \r\n\r\n";
     int headSize = sizeof(head) - 1;
+    int n;
 
 
        
@@ -55,6 +56,9 @@ int main(int argc, char const *argv[])
     printf("server running\n");
    for(;;)
    { 
+       
+    
+       
        // accept the connection
         if ((new_socket = accept(server_fd, (struct sockaddr *)&address,  
                            (socklen_t*)&addrlen))<0) 
@@ -62,9 +66,14 @@ int main(int argc, char const *argv[])
             perror("accept"); 
              exit(EXIT_FAILURE); 
         } 
-
+        do//edit
+       {
         // receive a request   
-       recv( new_socket , buffer, sizeof(buffer), 0); //EDIT!!!!
+       if((n = recv( new_socket , buffer, sizeof(buffer), 0)) <= 0)
+       {
+           printf("Client disconnected normally.\n");
+           return 0;
+       } //EDIT!!!!
        //gets first token in string header(assumed to be GET)
         char* token = strtok(buffer," "); //edited
         //gets the file name to be requested;
@@ -109,7 +118,7 @@ int main(int argc, char const *argv[])
             printf("file not found!\n");
             send(new_socket , notFound, sizeof(notFound) , 0);
         }
-
+       }while(n > 0);
 	    //fclose(fileName);
         close(new_socket);
     

@@ -16,21 +16,14 @@ int main(int argc, char *argv[])
     int n; 
     struct sockaddr_in serv_addr; 
     char buffer[1024] = {0}; 
+    char file[64];
+    int exitBool;
+    
 
     char head[] = "HTTP/1.1 200 OK\r\n\r\n";
-
-    if(argc != 2)
-    {
-        printf("Two arguments are required!\n One for the executable and one for the file requested.");
-        return -1;
-    }
-    char *hello = argv[1];
-   
-    if(argc != 2)
-    {
-        printf("Two arguments are required!");
-        return -1;
-    }
+    printf("IP address of server: ");
+    fgets(buffer, 16, stdin);
+    
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
     { 
         printf("\n Socket creation error \n"); 
@@ -39,9 +32,10 @@ int main(int argc, char *argv[])
    
     serv_addr.sin_family = AF_INET; 
     serv_addr.sin_port = htons(PORT); 
-       
+    char* tok = strtok(buffer,"\n");
+    printf("%s\n", tok);
    //using the loopback address for testing
-    if(inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)<=0)  
+    if(inet_pton(AF_INET, tok, &serv_addr.sin_addr)<=0)  
     { 
         printf("\nInvalid address/ Address not supported \n"); 
         return -1; 
@@ -52,9 +46,15 @@ int main(int argc, char *argv[])
         printf("\nConnection Failed \n"); 
         return -1; 
     } 
-
+    do
+    {
+    
+    exitBool = 0;
+    printf("Please enter the file name: ");
+    fgets(file, 64, stdin);
+    char* toke = strtok(file, "\n");
     //put a simple get request in the buffer with the file to get and a blank line after
-    sprintf(buffer, "GET %s HTTP/1.1\r\nHost: 127.0.0.1:600019\r\n", hello);
+    sprintf(buffer, "GET %s HTTP/1.1\r\nHost: 127.0.0.1:600019\r\n", toke);
     //send the get request in the buffer
     send(sock , buffer , sizeof(buffer), 0 ); 
     printf("request sent from client\n"); 
@@ -94,6 +94,17 @@ int main(int argc, char *argv[])
     {
         printf("%s\n", token);
     }
+    printf("do you have another request? y/n \n");
+    fgets(buffer, 16, stdin);
+    //char c = fgetc(stdin);
+    char* tokenn = strtok(buffer, "\n");
+    if((strcmp(tokenn, "y")) == 0)
+    {
+        exitBool = 1;
+    }
+
+
+    }while(exitBool);
     
     close(sock);
 
