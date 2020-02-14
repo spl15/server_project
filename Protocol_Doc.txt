@@ -1,0 +1,17 @@
+﻿Stephen Lamalie
+COP4635
+project 01
+
+
+	This program was built solely by Stephen Lamalie. This program aims to show the workings of sockets, http and tcp protocols, and the client/server paradigm. The program makes special use of the HTTP protocol and TCP/IP protocols.
+	This folder comes with 13 files:
+		httpServer.c – the server source code
+		httpClient.c – the client source code
+		6 screenshots -to show the program working on my machine, the program has also been tested on UWF SSH.
+		A Makefile- makes use of make to create the executables and make clean to clean them up
+		test.txt – a simple test txt file 
+		test.png – the image in the hyperlink in the html file, just a sample image
+		test.html – a simple html file that can be opened up on the browser, it has one working hyperlink and one nonworking hyperlink
+		new_file.txt – the new file that is produced when test.txt is requested from the server while running the client.
+
+	To run the program, one needs to execute the make command on the command line containing the makefile. This will create two executables named client and server. First one needs to run the server program by typing ./server. The server will tell you(print to stdout) when it is up and running. Now you need to start the client program by typing ./client in the command line. The client will then ask you for an IP address. It is a good idea to just use 127.0.0.1 for testing(the loop-back ip address to your own machine). The client will then ask for a file name to search for in path form(starting with /, ex: “/test.txt”). Both the server and client program will show to stdout whether the appropriate file was opened and sent. If the client receives a “200 OK” response it will write the contents of the file to a file called “new_file.txt”. We will assume for this project that only txt based files will need to be transmitted(.txt, .html, .htm). The file already has a new_file.txt inside to examine the content to compare to test.txt from which it was created. Upon successful copy the client program will override this file however, so if you use this with real world programs make sure to change the file names in between uses. To use with any web browser just enter “127.0.0.1:60019/test.html” into the addres field with the server program running. Note this program makes use of the port # 60019 as per assignment instructions for appropriate dynamic port numbers.
