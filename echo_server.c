@@ -13,13 +13,10 @@ int main(int argc, char const *argv[])
     struct sockaddr_in address; 
     int opt = 1; 
     int addrlen = sizeof(address); 
-    char buffer[1048]; 
-
-  
-    char* ptr = buffer;
+    char buffer[1048] = {0};
     int maxLen = sizeof(buffer);
     char head[] = "HTTP/1.1 200 OK\r\n\r\n";
-    char notFound[] = "HTTP/1.1 404 FILE NOT FOUND\r\n\r\n";
+    char notFound[] = "HTTP/1.1 450 File not available \r\n\r\n";
     int headSize = sizeof(head) - 1;
 
 
@@ -100,10 +97,7 @@ int main(int argc, char const *argv[])
 	        {
 	            c = fgetc(fileName);
 	            buffer[i + headSize] = c;//EDIT
-	             //if(c == EOF)
-	           // {
-	           //      break;
-  	          //  }
+	             
 	        }
 
             send(new_socket , buffer , (fileSize + headSize) , 0 );//EDIT
@@ -113,7 +107,6 @@ int main(int argc, char const *argv[])
         {
 
             printf("file not found!\n");
-            //sprintf(buffer, "%s", notFound);
             send(new_socket , notFound, sizeof(notFound) , 0);
         }
 

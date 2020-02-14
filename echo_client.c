@@ -16,8 +16,7 @@ int main(int argc, char *argv[])
     int n; 
     struct sockaddr_in serv_addr; 
     char buffer[1024] = {0}; 
-    char temp[128] = {0};
-    char *ptr = buffer;
+
     char head[] = "HTTP/1.1 200 OK\r\n\r\n";
 
     if(argc != 2)
@@ -27,11 +26,6 @@ int main(int argc, char *argv[])
     }
     char *hello = argv[1];
    
-    
-    int maxLen = sizeof(buffer);
-    int len = 0;
-   
-
     if(argc != 2)
     {
         printf("Two arguments are required!");
@@ -60,9 +54,9 @@ int main(int argc, char *argv[])
     } 
 
     //put a simple get request in the buffer with the file to get and a blank line after
-    sprintf(temp, "GET %s HTTP/1.1\r\nHost: 127.0.0.1:600019\r\n", argv[1]);
+    sprintf(buffer, "GET %s HTTP/1.1\r\nHost: 127.0.0.1:600019\r\n", hello);
     //send the get request in the buffer
-    send(sock , temp , sizeof(temp), 0 ); 
+    send(sock , buffer , sizeof(buffer), 0 ); 
     printf("request sent from client\n"); 
     //clear the buffer with 0's
     
