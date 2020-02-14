@@ -113,11 +113,14 @@ int main(int argc, char *argv[])
     fgets(buffer, 16, stdin);
 
     char* tokenn = strtok(buffer, "\n");
-    if((strcmp(tokenn, "x")) == 0)
+    //without checking if the tokenn is NULL a seg fault can occur
+    if(tokenn != NULL)
     {
-        exitBool = 0;
+        if((strcmp(tokenn, "x")) == 0)
+        {
+            exitBool = 0;
+        }
     }
-
     // socket needs to be closed every use, create a new one if need be...
     close(sock);
     
