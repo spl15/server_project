@@ -13,12 +13,15 @@ int main(int argc, char const *argv[])
     struct sockaddr_in address; 
     int opt = 1; 
     int addrlen = sizeof(address); 
-    char buffer[1048] = {0}; 
+    char buffer[1048]; 
+
   
     char* ptr = buffer;
     int maxLen = sizeof(buffer);
     char head[20] = "HTTP/1.1 200 OK\r\n\r\n";
     char notFound[32] = "HTTP/1.1 404 FILE NOT FOUND\r\n\r\n";
+    int headSize = sizeof(head);
+
 
        
     // Creating socket 
@@ -66,7 +69,7 @@ int main(int argc, char const *argv[])
         // receive a request   
        recv( new_socket , buffer, sizeof(buffer), 0); //EDIT!!!!
        //gets first token in string header(assumed to be GET)
-        char* token = strtok(ptr," "); //edited
+        char* token = strtok(buffer," "); //edited
         //gets the file name to be requested;
         token = strtok(NULL," ");
         token = token +1;
@@ -76,7 +79,7 @@ int main(int argc, char const *argv[])
         //retrieve file
         FILE* fileName;
         // reads a file whos name is specified by the token after first word(GET) seperated by space)
-        fileName = fopen(token, "rb+");
+        fileName = fopen(token, "rb");
        //memset(buffer, 0, maxLen);
         if(fileName != NULL)
         {
@@ -85,33 +88,36 @@ int main(int argc, char const *argv[])
             fseek(fileName, 0L, SEEK_END);
             int fileSize = (int)ftell(fileName);
 	        rewind(fileName);
-	         int i;
-	        char c;
+            memset(buffer,0,maxLen);
+           //sprintf(buffer,"%s", head);//EDIT
+    
+	        int i = 0;
+	        int c;
+           
             // send the file
-          
-	        for(i = 0;i < buffer;i++)
+         
+	        for(i = 0;i < fileSize;i++)//EDIT
 	        {
 	             c = fgetc(fileName);
-	             buffer[i] = c;
-	             if(c == EOF)
-	            {
-	                 break;
-  	            }
+	             buffer[i] = c;//EDIT
+	             //if(c == EOF)
+	           // {
+	           //      break;
+  	          //  }
 	        }
-	  
-           
-            send(new_socket , buffer , fileSize , 0 );
-            
+
+            send(new_socket , buffer , fileSize , 0 );//EDIT
+            fclose(fileName);
         }
         else
         {
 
             printf("file not found!\n");
-            sprintf(buffer, "%s", notFound);
-            send(new_socket , buffer, sizeof(notFound) , 0);
+            //sprintf(buffer, "%s", notFound);
+            send(new_socket , notFound, sizeof(notFound) , 0);
         }
 
-	    close(fileName);
+	    //fclose(fileName);
         close(new_socket);
     
    } 
