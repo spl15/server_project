@@ -1,4 +1,10 @@
-
+/*
+ * Stephen Lamalie
+ * COP4635
+ * project 01
+ * httpServer.c
+ * 
+ */
 
 #include <unistd.h> 
 #include <stdio.h> 
@@ -9,6 +15,7 @@
 #define PORT 60019
 int main(int argc, char const *argv[]) 
 { 
+    // declare the stuff i will need
     int server_fd, new_socket; 
     struct sockaddr_in address; 
     int opt = 1; 
@@ -18,7 +25,6 @@ int main(int argc, char const *argv[])
     char head[] = "HTTP/1.1 200 OK\r\n\r\n";
     char notFound[] = "HTTP/1.1 450 File not available \r\n\r\n FILE NOT AVAILABLE!S";
     int headSize = sizeof(head) - 1;
-    int n;
 
 
        
@@ -66,27 +72,25 @@ int main(int argc, char const *argv[])
             perror("accept"); 
              exit(EXIT_FAILURE); 
         } 
-       // do//edit
-       //{
+       
         // receive a request   
-       (n = recv( new_socket , buffer, sizeof(buffer), 0));
-       //{
-          // printf("Client disconnected normally.\n");
-           //return 0;
-       //} //EDIT!!!!
+       recv( new_socket , buffer, sizeof(buffer), 0);
+       
        //gets first token in string header(assumed to be GET)
-        char* token = strtok(buffer," "); //edited
+        char* token = strtok(buffer," "); 
+
         //gets the file name to be requested;
         token = strtok(NULL," ");
         token = token +1;
-       // memset(buffer,0,sizeof(buffer));
+       
+        //prints the file name that its trying to gain access to
         printf("%s\n", token);
-        //printf("%s\n",buffer); 
+       
         //retrieve file
         FILE* fileName;
         // reads a file whos name is specified by the token after first word(GET) seperated by space)
         fileName = fopen(token, "rb");
-       //memset(buffer, 0, maxLen);
+      
         if(fileName != NULL)
         {
             printf("file opened\n");
@@ -94,8 +98,10 @@ int main(int argc, char const *argv[])
             fseek(fileName, 0L, SEEK_END);
             int fileSize = (int)ftell(fileName);
 	        rewind(fileName);
+            //clear the buffer again
             memset(buffer,0,maxLen);
-           sprintf(buffer,"%s", head);//EDIT
+            //add the header first 
+            sprintf(buffer,"%s", head);//EDIT
     
 	        int i = 0;
 	        int c;
@@ -114,11 +120,11 @@ int main(int argc, char const *argv[])
         }
         else
         {
-
+            //send the fiel not found header
             printf("file not found!\n");
             send(new_socket , notFound, (sizeof(notFound) - 2)  , 0);
         }
-       //}while(n > 0);
+       
 	    
         close(new_socket);
     
