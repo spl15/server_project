@@ -12,18 +12,24 @@
    
 int main(int argc, char *argv[]) 
 { 
-    int sock = 0;
+    
     int n; 
     struct sockaddr_in serv_addr; 
-    char buffer[1024] = {0}; 
+    char buffer[8000] = {0}; 
     char file[64];
+    char ipadd[64] = {0};
     int exitBool;
     
 
     char head[] = "HTTP/1.1 200 OK\r\n\r\n";
-    printf("IP address of server: ");
+    printf("IP address of server: \n(Hint: use 127.0.0.1 for testing) ");
     fgets(buffer, 16, stdin);
-    
+    char* tok = strtok(buffer,"\n");
+    printf("%s\n", tok);
+   strcpy(ipadd, tok);
+   do
+   {
+    int sock = 0;
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
     { 
         printf("\n Socket creation error \n"); 
@@ -32,25 +38,24 @@ int main(int argc, char *argv[])
    
     serv_addr.sin_family = AF_INET; 
     serv_addr.sin_port = htons(PORT); 
-    char* tok = strtok(buffer,"\n");
-    printf("%s\n", tok);
-   //using the loopback address for testing
-    if(inet_pton(AF_INET, tok, &serv_addr.sin_addr)<=0)  
+    
+   //do
+   //{
+    if(inet_pton(AF_INET, ipadd, &serv_addr.sin_addr)<=0)  
     { 
         printf("\nInvalid address/ Address not supported \n"); 
         return -1; 
     } 
-   
+   //do
+   //{
     if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) 
     { 
         printf("\nConnection Failed \n"); 
         return -1; 
     } 
-    do
-    {
     
-    exitBool = 0;
-    printf("Please enter the file name: ");
+    exitBool = 1;
+    printf("Please enter the file name: \n(Hint: remember to use the path, it should start with /) \n");
     fgets(file, 64, stdin);
     char* toke = strtok(file, "\n");
     //put a simple get request in the buffer with the file to get and a blank line after
@@ -72,6 +77,7 @@ int main(int argc, char *argv[])
     char* token = strtok(buffer, "\n");
     if(strncmp(token, head, 15) == 0)
     {
+        printf("File received\n");
         FILE* theFile;
     
         theFile = fopen("new_file.txt", "w+");
@@ -94,21 +100,21 @@ int main(int argc, char *argv[])
     {
         printf("%s\n", token);
     }
-    printf("do you have another request? y/n \n");
+    printf("Press (x) to exit, enter any other single character key to process another request \n");
     fgets(buffer, 16, stdin);
     //char c = fgetc(stdin);
     char* tokenn = strtok(buffer, "\n");
-    if((strcmp(tokenn, "y")) == 0)
+    if((strcmp(tokenn, "x")) == 0)
     {
-        exitBool = 1;
+        exitBool = 0;
     }
 
 
+    close(sock);
+    
+    
     }while(exitBool);
     
-    close(sock);
-
-  
 
   
     return 0; 
