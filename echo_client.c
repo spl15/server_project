@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     char buffer[1024] = {0}; 
     char temp[128] = {0};
     char *ptr = buffer;
-    //char* delim = "\r\n";
+    char head[] = "HTTP/1.1 200 OK\r\n\r\n";
 
     if(argc != 2)
     {
@@ -74,20 +74,33 @@ int main(int argc, char *argv[])
     } 
     //printf("%s\n",buffer ); 
     //write what is received to a file
-    FILE* theFile;
     
-    theFile = fopen("new_file.txt", "w+");
-    //fwrite(buffer, 1, sizeof(buffer),theFile);
-    int i = 0;
-    int c;
-    //printf("%d", n);
-    for(i = 0;i < n;i++)
+    char* token = strtok(buffer, "\n");
+    if(strncmp(token, head, 15) == 0)
     {
-	    c = buffer[i];
-	    fputc(c, theFile);      
+        FILE* theFile;
+    
+        theFile = fopen("new_file.txt", "w+");
+    
+        //fwrite(buffer, 1, sizeof(buffer),theFile);
+        int i = 0;
+        char c;
+        //printf("%d", n);
+        for(i = 0;i < (n - sizeof(head));i++)
+        {
+     
+	        c = buffer[i + sizeof(head)-1];
+	        fputc(c, theFile);
+            
+        }
+    
+        fclose(theFile);
+    }
+    else
+    {
+        printf("%s\n", token);
     }
     
-    fclose(theFile);
     close(sock);
 
   

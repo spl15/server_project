@@ -18,9 +18,9 @@ int main(int argc, char const *argv[])
   
     char* ptr = buffer;
     int maxLen = sizeof(buffer);
-    char head[20] = "HTTP/1.1 200 OK\r\n\r\n";
-    char notFound[32] = "HTTP/1.1 404 FILE NOT FOUND\r\n\r\n";
-    int headSize = sizeof(head);
+    char head[] = "HTTP/1.1 200 OK\r\n\r\n";
+    char notFound[] = "HTTP/1.1 404 FILE NOT FOUND\r\n\r\n";
+    int headSize = sizeof(head) - 1;
 
 
        
@@ -89,24 +89,24 @@ int main(int argc, char const *argv[])
             int fileSize = (int)ftell(fileName);
 	        rewind(fileName);
             memset(buffer,0,maxLen);
-           //sprintf(buffer,"%s", head);//EDIT
+           sprintf(buffer,"%s", head);//EDIT
     
 	        int i = 0;
 	        int c;
            
             // send the file
-         
+            
 	        for(i = 0;i < fileSize;i++)//EDIT
 	        {
-	             c = fgetc(fileName);
-	             buffer[i] = c;//EDIT
+	            c = fgetc(fileName);
+	            buffer[i + headSize] = c;//EDIT
 	             //if(c == EOF)
 	           // {
 	           //      break;
   	          //  }
 	        }
 
-            send(new_socket , buffer , fileSize , 0 );//EDIT
+            send(new_socket , buffer , (fileSize + headSize) , 0 );//EDIT
             fclose(fileName);
         }
         else
